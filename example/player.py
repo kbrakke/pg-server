@@ -7,7 +7,7 @@ import os
 import auction_helper as AH
 from constants import SERVER_HOST, SERVER_PORT
 
-server_url = SERVER_HOST + SERVER_PORT
+server_url = SERVER_HOST + ":" + SERVER_PORT
 
 
 class Player:
@@ -20,6 +20,7 @@ class Player:
     def is_my_turn(self):
         response = requests.get(server_url + "/turn_info").json()
         player_turn = response.get('current_player')
+        print("current turn: "+str(player_turn))
         if player_turn == self.name:
             return True
         return False
@@ -30,7 +31,8 @@ class Player:
                                cookies=self.player_token).json()
         all_player_info = requests.get(server_url + "/player_info").json()
         auction_state = requests.get(server_url + "/auction").json()
-        AH.main(my_info, market_state, auction_state,
+        resource_state = requests.get(server_url + "/resources").json()
+        AH.main(my_info, market_state, auction_state, resource_state,
                 all_player_info, self.player_token)
         new_state = requests.get(server_url + '/auction').json()
         print(new_state)
